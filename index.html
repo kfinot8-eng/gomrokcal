@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>داشبورد محاسبه عوارض گمرکی</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: Vazirmatn, sans-serif; background: #f8f9fa; }
+    .container { max-width: 900px; margin: auto; padding: 1rem; }
+    input[type="number"], input[type="text"] {
+      direction: ltr; text-align: right;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-center">
+  <div class="container bg-white p-6 rounded-2xl shadow-lg">
+    <h1 class="text-2xl font-bold text-center mb-6 text-gray-800">
+      داشبورد محاسبه حقوق و عوارض گمرکی
+    </h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label for="rate">نرخ ارز گمرکی (﷼):</label>
+        <input id="rate" type="number" class="w-full border p-2 rounded" value="50000">
+      </div>
+      <div>
+        <label for="entryTaxRate">حقوق ورودی کالا (%):</label>
+        <input id="entryTaxRate" type="number" class="w-full border p-2 rounded" value="10">
+      </div>
+      <div>
+        <label for="fob">ارزش FOB کالا ($):</label>
+        <input id="fob" type="number" class="w-full border p-2 rounded" value="10000">
+      </div>
+      <div>
+        <label for="freight">کرایه حمل ($):</label>
+        <input id="freight" type="number" class="w-full border p-2 rounded" value="500">
+      </div>
+      <div>
+        <label for="insurance">بیمه کالا ($):</label>
+        <input id="insurance" type="number" class="w-full border p-2 rounded" value="50">
+      </div>
+      <div>
+        <label for="discount">تخفیفات بند 49 اظهارنامه (﷼):</label>
+        <input id="discount" type="number" class="w-full border p-2 rounded" value="0">
+      </div>
+    </div>
+
+    <div class="flex justify-center gap-4 mt-6">
+      <button onclick="calculate()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow">
+        محاسبه
+      </button>
+      <button onclick="resetForm()" class="bg-gray-200 hover:bg-gray-300 px-5 py-2 rounded-lg shadow">
+        بازنشانی
+      </button>
+    </div>
+
+    <div id="results" class="mt-8 space-y-2 text-gray-800"></div>
+  </div>
+
+  <script>
+    // قالب‌بندی ریال (بدون اعشار، با جداکننده هزارگان)
+    function formatIRR(n) {
+      return Math.round(n).toLocaleString('en-US') + ' ﷼';
+    }
+
+    // قالب‌بندی دلار (با دو رقم اعشار)
+    function formatUSD(n) {
+      return '$' + n.toFixed(2).toLocaleString('en-US');
+    }
+
+    function calculate() {
+      const rate = parseFloat(document.getElementById('rate').value) || 0;
+      const entryTaxRate = parseFloat(document.getElementById('entryTaxRate').value) || 0;
+      const fob = parseFloat(document.getElementById('fob').value) || 0;
+      const freight = parseFloat(document.getElementById('freight').value) || 0;
+      const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+      const discount = parseFloat(document.getElementById('discount').value) || 0;
+
+      // محاسبات اصلی
+      const cifUSD = fob + freight + insurance;
+      const cifIRR = cifUSD * rate;
+      const entryTax = cifIRR * (entryTaxRate / 100);
+      const redCrescent = cifIRR * 0.001;
+      const waste = cifIRR * 0.003;
+      const otherCosts = 0;
+      const vatBase = cifIRR + entryTax + redCrescent + waste - discount;
+      const vat = vatBase * 0.10;
+      const tax2 = cifIRR * 0.02;
+      const total = entryTax + redCrescent + waste + vat + tax2 - discount;
+
+      // نمایش نتایج
+      document.getElementById('results').innerHTML = `
+        <div><b>ارزش CIF کالا (دلاری):</b> ${formatUSD(cifUSD)}</div>
+        <div><b>ارزش CIF ریالی:</b> ${formatIRR(cifIRR)}</div>
+        <div><b>حقوق ورودی:</b> ${formatIRR(entryTax)}</div>
+        <div><b>هلال احمر:</b> ${formatIRR(redCrescent)}</div>
+        <div><b>پسماند:</b> ${formatIRR(waste)}</div>
+        <div><b>سایر هزینه‌های باکس ۴۳:</b> ${formatIRR(otherCosts)}</div>
+        <div><b>مالیات بر ارزش افزوده (۱۰٪):</b> ${formatIRR(vat)}</div>
+        <div><b>مالیات دو درصد:</b> ${formatIRR(tax2)}</div>
+        <div><b>تخفیف بند ۴۹:</b> ${formatIRR(discount)}</div>
+        <hr class="my-2">
+        <div class="text-xl font-bold text-blue-700">مجموع پرداختی: ${formatIRR(total)}</div>
+      `;
+    }
+
+    function resetForm() {
+      document.querySelectorAll('input').forEach(i => {
+        if (!i.hasAttribute('readonly')) i.value = 0;
+      });
+      document.getElementById('rate').value = 50000;
+      calculate();
+    }
+
+    // اجرای خودکار در شروع
+    calculate();
+  </script>
+</body>
+</html>
