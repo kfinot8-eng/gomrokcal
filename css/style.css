@@ -1,1 +1,54 @@
+/* تنظیم فونت و پس‌زمینه */
+body {
+    font-family: Vazirmatn, sans-serif;
+    background: #f0f2f5;
+}
+
+/* کارت داشبورد */
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* استایل ورودی‌ها */
+input[type="number"], input[type="text"] {
+    direction: ltr;
+    text-align: right;
+    border: 1px solid #d1d5db;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="number"]:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* دکمه‌ها */
+button {
+    transition: all 0.2s ease-in-out;
+}
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* بخش نتایج */
+#results {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 1rem;
+    border: 1px solid #e5e7eb;
+}
+
+/* متن نتایج */
+#results div {
+    margin-bottom: 0.5rem;
+}
 
